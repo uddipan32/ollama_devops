@@ -1,3 +1,4 @@
 ollama
 pymongo
-dotenv
+python-dotenv
+slack-bolt

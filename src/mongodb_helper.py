@@ -15,7 +15,38 @@ class ConnectMongoDB:
             raise ConnectionError(f"Failed to connect to MongoDB: {str(e)}")
 
     def get_endpoints(self):
-        return self.endpoints_collection.find()
+        # content = """You are a helpful assistant that manages API endpoints. 
+        #                 When showing endpoints, please format them clearly and highlight important details like:
+        #                 - Endpoint name
+        #                 - URL
+        #                 - HTTP method
+        #                 - Any authentication requirements
+                        
+        #                 Present the information in a structured and easy-to-read format."""
+
+        """
+        Get all endpoints from the database
+        Args:
+            None
+        Returns:
+            A list of all endpoints in the database
+        """
+
+        print("Getting endpoints...")
+
+        return self.endpoints_collection.find().to_list(length=None)
+
+    def get_endpoint_by_name(self, name: str):
+        print(f"name: {name}")
+        content ="""You are a helpful assistant that manages API endpoints. 
+                        When showing endpoints, please format them clearly and highlight important details like:
+                        - Endpoint name
+                        - URL
+                        - HTTP method
+                        - Any authentication requirements
+                        
+                        Present the information in a structured and easy-to-read format."""
+        return {"system_content": content, "function_content": f"The endpoint is: {self.endpoints_collection.find_one({'name': name})}."}
 
     def add_endpoint(self, endpoint: dict):
         self.endpoints_collection.insert_one({
