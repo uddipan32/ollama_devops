@@ -13,3 +13,7 @@ A Python-based DevOps toolkit for automating routine operations and monitoring s
 ```bash
 pip install -r requirements.txt
 ```
+## Run 
+```bash
+python main.py
+```
