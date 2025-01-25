@@ -4,13 +4,22 @@ import os
 from dotenv import load_dotenv
 import time
 import asyncio
+import ssl
 
 class SlackBot:
     def __init__(self, mongodb, ollama):
         load_dotenv()
         
-        # Initialize the Slack client
-        self.client = WebClient(token=os.environ["SLACK_TOKEN"])
+        # Create a custom SSL context that ignores certificate verification
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+        
+        # Initialize the Slack client with the custom SSL context
+        self.client = WebClient(
+            token=os.environ["SLACK_TOKEN"],
+            ssl=ssl_context
+        )
         self.channel_id = os.environ["SLACK_CHANNEL_ID"]
         self.mongodb = mongodb
         self.ollama = ollama
