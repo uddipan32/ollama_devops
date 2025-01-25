@@ -18,6 +18,16 @@ class SlackBot:
         # Keep track of the last processed message timestamp
         self.last_ts = None
 
+    def send_message(self, text):
+        try:
+            response = self.client.chat_postMessage(
+                channel=self.channel_id,
+                text=text
+            )
+            return response
+        except SlackApiError as e:
+            print(f"Error sending message: {e.response['error']}")
+
     async def process_message(self, message):
         try:
             tools = [
@@ -46,6 +56,8 @@ class SlackBot:
             # Handle function calls or regular responses
             if response["message"].get("tool_calls"):
                 for tool in response["message"]["tool_calls"]:
+                    function_to_call = tool["function"]["name"]
+                    print(f"function_to_call: {function_to_call}")
                     if tool["function"]["name"] == "get_endpoints":
                         endpoints = self.mongodb.get_endpoints()
                         print(f"endpoints: {endpoints}")
@@ -90,25 +102,42 @@ class SlackBot:
                 # Get channel history
                 result = self.client.conversations_history(
                     channel=self.channel_id,
-                    limit=1  # Only get the latest message
+                    limit=5  # Increased limit to get more messages
                 )
                 
                 if result["messages"]:
-                    latest_message = result["messages"][0]
+                    tasks = []
+                    for message in result["messages"]:
+                        # Only process messages we haven't seen before
+                        if (not hasattr(self, 'processed_messages')):
+                            self.processed_messages = set()
+                            
+                        if message["ts"] not in self.processed_messages and "bot_id" not in message:
+                            self.processed_messages.add(message["ts"])
+                            # Create task for each message
+                            task = asyncio.create_task(self._handle_message(message))
+                            tasks.append(task)
                     
-                    # Only process new messages
-                    if self.last_ts != latest_message["ts"]:
-                        self.last_ts = latest_message["ts"]
-                        
-                        # Don't process bot messages
-                        if "bot_id" not in latest_message:
-                            print(f"Received message: {latest_message['text']}")
-                            response = await self.process_message(latest_message["text"])
-                            self.send_message(response)
+                    # Wait for all message processing to complete
+                    if tasks:
+                        await asyncio.gather(*tasks)
+                
+                # Clean up old processed messages (optional)
+                if hasattr(self, 'processed_messages') and len(self.processed_messages) > 1000:
+                    self.processed_messages = set(list(self.processed_messages)[-1000:])
                 
                 # Sleep to avoid hitting rate limits
                 await asyncio.sleep(1)
 
             except Exception as e:
                 print(f"Error: {str(e)}")
-                await asyncio.sleep(5)  # Wait longer if there's an error 
+                await asyncio.sleep(5)  # Wait longer if there's an error
+
+    async def _handle_message(self, message):
+        """Helper method to process a single message"""
+        try:
+            print(f"Processing message: {message['text']}")
+            response = await self.process_message(message["text"])
+            self.send_message(response)
+        except Exception as e:
+            print(f"Error processing message: {str(e)}") 

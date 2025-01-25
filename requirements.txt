@@ -2,3 +2,5 @@ ollama
 pymongo
 python-dotenv
 slack-bolt
+schedule
+APScheduler

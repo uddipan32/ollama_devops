@@ -67,19 +67,6 @@ def main():
     # print(list(endpoints))
     # ollama
     ollama = ConnectOllama()
-    # message = {'role': 'user', 'content': "Get all endpoints"}
-
-    # connect slack
-    slack = SlackBot(mongodb, ollama)
-    # asyncio.run(slack.listen())
-
-    # scheduler
-    scheduler = Scheduler(mongodb, ollama)
-    asyncio.run(scheduler.start_scheduler())
-
-
-    return 
-
     while True:
         # get command line input
         command = input("Enter message: ")
