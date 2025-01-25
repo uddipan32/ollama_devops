@@ -15,6 +15,7 @@ class Scheduler:
         self.ollama = ollama
         # schedule the job to run at 10:00 AM IST
         self.schedule_job(self.sendGoodMorningMessage, trigger='cron', hour=10, minute=0, timezone='Asia/Kolkata')
+        self.schedule_job(self.check_enpoint_status, trigger='interval', minutes=5)
         asyncio.get_event_loop().run_until_complete(self.start_scheduler())
     
     # send a unique good morning message to the channel so that the user knows that the bot is running
@@ -39,6 +40,24 @@ class Scheduler:
         response = response["message"]["content"]
         slack_helper = SlackBot(self.mongodb, self.ollama)
         slack_helper.send_message(response)
+
+    async def check_enpoint_status(self):
+        http_checkup = HttpCheckup()
+        endpoints = self.mongodb.get_endpoints()
+        for endpoint in endpoints:
+            response = http_checkup.check_http(endpoint)
+            print(response)
+            if isinstance(response, Exception):
+                response = await self.ollama.chat(message={
+                    "role": "user",
+                    "content": "You are a helpful information bot. You are given a list of information and you need to provide a summary of the information. The information is as follows: " + str(response)
+                }, ignore_history=True)
+                response = response["message"]["content"]
+                slack_helper = SlackBot(self.mongodb, self.ollama)
+                slack_helper.send_message(response)
+            else:
+                print(f"Endpoint {endpoint['name']} is working fine")
+       
 
     async def _run_job(self, job):
         # Properly await the coroutine

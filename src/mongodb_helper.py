@@ -34,7 +34,7 @@ class ConnectMongoDB:
 
         print("Getting endpoints...")
 
-        return self.endpoints_collection.find().to_list(length=None)
+        return self.endpoints_collection.find({"status": "ACTIVE"}).to_list(length=None)
 
     def get_endpoint_by_name(self, name: str):
         print(f"name: {name}")

@@ -29,7 +29,7 @@ class HttpCheckup:
 
             return response
         except Exception as e:
-            return f"Error: {str(e)}"
+            return e
 
     def check_otp_balance(self):
         print("Checking OTP balance")
