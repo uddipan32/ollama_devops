@@ -1,9 +1,10 @@
+import os
 from ollama import chat
 from ollama import ChatResponse
 from ollama import AsyncClient
 
 class ConnectOllama:
-    def __init__(self, model: str = "llama3.2:latest"):
+    def __init__(self, model: str = os.getenv("OLLAMA_MODEL")):
         self.model = model
         self.message_history = []
         self.memory_size = 100
