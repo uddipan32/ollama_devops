@@ -1,6 +1,7 @@
 from ollama import chat
 from ollama import ChatResponse
 from ollama import AsyncClient
+from ollama import Client
 
 class ConnectOllama:
     def __init__(self, model: str = "llama3.2:latest"):
@@ -18,8 +19,10 @@ class ConnectOllama:
             self.message_history.append(message)
 
         print(f"message_history: {self.message_history}")
+
+        client = Client(base_url="http://localhost:11434")
         
-        response = await AsyncClient().chat(
+        response = await client.chat(
             model=self.model,
             messages=self.message_history,
             tools=tools,
