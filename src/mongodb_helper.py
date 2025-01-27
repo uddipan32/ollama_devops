@@ -15,15 +15,6 @@ class ConnectMongoDB:
             raise ConnectionError(f"Failed to connect to MongoDB: {str(e)}")
 
     def get_endpoints(self):
-        # content = """You are a helpful assistant that manages API endpoints. 
-        #                 When showing endpoints, please format them clearly and highlight important details like:
-        #                 - Endpoint name
-        #                 - URL
-        #                 - HTTP method
-        #                 - Any authentication requirements
-                        
-        #                 Present the information in a structured and easy-to-read format."""
-
         """
         Get all endpoints from the database
         Args:

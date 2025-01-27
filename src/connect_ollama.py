@@ -9,8 +9,11 @@ class ConnectOllama:
         self.message_history = []
         self.memory_size = 100
        
-
     async def chat(self, message: dict, tools: list = [], system_prompt: str = "", ignore_history: bool = False) -> str:
+                
+        if ignore_history:
+            self.message_history = []
+
         # self.message_history.append(message)
         if system_prompt:
             self.message_history = [system_prompt]

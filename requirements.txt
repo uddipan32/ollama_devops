@@ -4,3 +4,4 @@ python-dotenv
 slack-bolt
 schedule
 APScheduler
+requests
