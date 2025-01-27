@@ -2,7 +2,7 @@
 
 Ollama DevTools is a Python-based DevOps toolkit for automating routine operations and monitoring system health. It features availability checks for websites and APIs, cron job management, an alert system for critical events, and system querying for resource and process information.
 
-This is an AI Agent that uses OLLAMA to interact with the system and the user. It is designed to be used in a Slack channel. It is able to check the status of the endpoints, send messages to the user, and send messages to the Slack channel.
+This is an AI Agent that uses OLLAMA to interact with the system and the user. It is designed to be used in a Slack channel. It is able to check the status of the endpoints, send messages to the user, and send messages to the Slack channel. Also can provide solutions to the endpoints that are not working.
 
 ## Requirements
 
